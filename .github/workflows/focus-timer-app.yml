@@ -14,7 +14,7 @@ env:
   AWS_REGION: us-east-1
   IMAGE_NAME: focus-timer
   ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
-  EKS_cluster_name: my-cluster
+ 
 
 jobs:
   build-scan-push:
