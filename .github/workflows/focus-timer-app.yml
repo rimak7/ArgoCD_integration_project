@@ -14,7 +14,7 @@ env:
   AWS_REGION: us-east-1
   IMAGE_NAME: focus-timer
   ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
-  EKS_cluster_name: "my-cluster"
+  EKS_cluster_name: my-cluster
 
 jobs:
   build-scan-push:
@@ -96,6 +96,7 @@ jobs:
       - name: Update kubeconfig
         run: |
          aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+         kubectl config current-context
 
       # ---------------------------
       # Deploy to EKS
