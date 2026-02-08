@@ -42,7 +42,8 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./focus-timer-app
+          file: ./focus-timer-app/Dockerfile
           push: false
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
