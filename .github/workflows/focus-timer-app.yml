@@ -37,7 +37,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       
-      # CREATE ECR REPOSITORY (NEW STEP)
+      # CREATE ECR REPOSITORY 
       
       - name: Create ECR repository if not exists
         run: |
@@ -89,20 +89,18 @@ jobs:
         with:
          version: 'v1.29.0'
 
-      
       # Update kubeconfig (EKS)
-      
-      
+  
       - name: Update kubeconfig
         run: |
          aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
 
-       # Deploy to EKS
-          
       - name: Verify Authentication
         run: |
           kubectl auth can-i create deployments --namespace focus
-      
+
+       # Deploy to EKS
+       
       - name: Deploy to EKS
         run: |
           kubectl create namespace focus || true

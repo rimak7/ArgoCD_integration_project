@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: focus-timer
+  name: restaurant-menu-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: focus-timer
+      app: restaurant-menu-app
   template:
     metadata:
       labels:
-        app: focus-timer
+        app: restaurant-menu-app
     spec:
       containers:
-        - name: focus-timer
-          image: 732168977482.dkr.ecr.us-east-1.amazonaws.com/focus-timer:latest 
+        - name: restaurant-menu-app
+          image: 732168977482.dkr.ecr.us-east-1.amazonaws.com/restaurant-menu-app:1
           ports:
             - containerPort: 80
