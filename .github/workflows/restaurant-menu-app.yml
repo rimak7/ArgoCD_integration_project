@@ -88,15 +88,6 @@ jobs:
         with:
          version: 'v1.29.0'
 
-      # Update kubeconfig (EKS)
-  
-      - name: Update kubeconfig
-        run: |
-         aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
-
-      - name: Verify Authentication
-        run: |
-          kubectl auth can-i create deployments --namespace restaurant
 
      #Create the Entry
       - name:
@@ -114,6 +105,16 @@ jobs:
           --principal-arn ${{ secrets.AWS_ROLE_ARN_OIDC }} \
           --policy-arn arn:aws:eks::aws:cluster-access-policy/${{ secrets.OIDC_NAME }} \
           --access-scope type=cluster 
+
+          # Update kubeconfig (EKS)
+  
+      - name: Update kubeconfig
+        run: |
+         aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Verify Authentication
+        run: |
+          kubectl auth can-i create deployments --namespace restaurant
 
        # Deploy to EKS
        
