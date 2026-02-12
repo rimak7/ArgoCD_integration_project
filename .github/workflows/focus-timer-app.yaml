@@ -90,22 +90,22 @@ jobs:
          version: 'v1.29.0'
 
 
-    #       #Create the Entry
-    #   - name: Create EKS Access Entry
-    #     run: |
-    #       aws eks create-access-entry \
-    #         --cluster-name ${{ secrets.EKS_CLUSTER_NAME }} \
-    #         --principal-arn ${{ secrets.AWS_ROLE_ARN_OIDC }} \
-    #         --type STANDARD || echo "Access Entry already exists, skipping..."
+          #Create the Entry
+      - name: Create EKS Access Entry
+        run: |
+          aws eks create-access-entry \
+            --cluster-name ${{ secrets.EKS_CLUSTER_NAME }} \
+            --principal-arn ${{ secrets.AWS_ROLE_ARN_OIDC }} \
+            --type STANDARD || echo "Access Entry already exists, skipping..."
             
-    #  #Attach the Policy
-    #   - name: Attach EKS Access Policy
-    #     run: |
-    #       aws eks associate-access-policy \
-    #         --cluster-name ${{ secrets.EKS_CLUSTER_NAME }} \
-    #         --principal-arn ${{ secrets.AWS_ROLE_ARN_OIDC }} \
-    #         --policy-arn arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy \
-    #         --access-scope type=cluster
+     #Attach the Policy
+      - name: Attach EKS Access Policy
+        run: |
+          aws eks associate-access-policy \
+            --cluster-name ${{ secrets.EKS_CLUSTER_NAME }} \
+            --principal-arn ${{ secrets.AWS_ROLE_ARN_OIDC }} \
+            --policy-arn arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy \
+            --access-scope type=cluster
 
       # Update kubeconfig (EKS)
   
