@@ -7,7 +7,7 @@ on:
     branches: ["main"]
 
 permissions:
-  id-token: write   # REQUIRED for OIDC
+  id-token: write  
   contents: read
 
 env:
@@ -94,9 +94,9 @@ jobs:
         run: |
           aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
 
-      # ---------------------------
-      # Corrected Deploy Section
-      # ---------------------------
+      
+      # Deploy to EKS
+      
       - name: Deploy to EKS
         run: |
           export APP_NAME=${{ env.APP_NAME }}
