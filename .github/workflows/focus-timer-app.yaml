@@ -13,7 +13,7 @@ permissions:
 env:
   AWS_REGION: us-east-1
   IMAGE_NAME: focus-timer
-  APP_NAME: focus-timer-app
+  APP_NAME: focus-timer
   SERVICE_PORT: 80
   SERVICE_TYPE: LoadBalancer
   REPLICAS: 2
