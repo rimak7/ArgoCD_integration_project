@@ -107,11 +107,6 @@ jobs:
           export SERVICE_TYPE=${{ env.SERVICE_TYPE }}
           export IMAGE_TAG=${{ github.run_number }}
           export CONTAINER_PORT=${{ env.CONTAINER_PORT }} # <--- Add this
-
           kubectl get namespace ${APP_NAME} || kubectl create namespace ${APP_NAME}
-
-
           envsubst < ./k8s-manifests/deployment.yaml | kubectl apply -f - -n ${APP_NAME}
-
-
           envsubst < ./k8s-manifests/service.yaml | kubectl apply -f - -n ${APP_NAME}
