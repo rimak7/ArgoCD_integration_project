@@ -18,4 +18,4 @@ spec:
         - name: ${APP_NAME}
           image: ${ECR_REGISTRY}/${APP_NAME}:${IMAGE_TAG}
           ports:
-         - containerPort: ${CONTAINER_PORT}
+            - containerPort: ${CONTAINER_PORT}
