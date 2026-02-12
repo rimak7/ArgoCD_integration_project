@@ -157,8 +157,8 @@ jobs:
 
           # 3. Apply Manifests using the correct path inside focus-timer-app
           # Using envsubst allows you to use variables inside your YAML files
-          envsubst < ./focus-timer-app/k8s-manifests/deployment.yaml | kubectl apply -f - -n ${APP_NAME}
-          envsubst < ./focus-timer-app/k8s-manifests/service.yaml | kubectl apply -f - -n ${APP_NAME}
+          envsubst < ./focus-timer-app/deployment.yaml | kubectl apply -f - -n ${APP_NAME}
+          envsubst < ./focus-timer-app/service.yaml | kubectl apply -f - -n ${APP_NAME}
           
           echo "Waiting for resources..."
           sleep 10
