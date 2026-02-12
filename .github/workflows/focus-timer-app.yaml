@@ -19,8 +19,6 @@ env:
   REPLICAS: 2
   ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
 
- 
-
 jobs:
   build-scan-push:
     runs-on: ubuntu-latest
@@ -29,9 +27,6 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      
-      # AWS Auth (OIDC)
-      
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -41,9 +36,6 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      
-      # CREATE ECR REPOSITORY 
-      
       - name: Create ECR repository if not exists
         run: |
           aws ecr describe-repositories --repository-names ${{ env.IMAGE_NAME }} || \
@@ -52,9 +44,6 @@ jobs:
             --image-tag-mutability MUTABLE \
             --image-scanning-configuration scanOnPush=true
 
-      
-      # Build Docker Image
-      
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
@@ -63,9 +52,6 @@ jobs:
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
 
-      
-      # Trivy Image Scan
-      
       - name: Trivy vulnerability scan
         uses: aquasecurity/trivy-action@0.20.0
         with:
@@ -74,9 +60,6 @@ jobs:
           exit-code: 1
           ignore-unfixed: true
 
-      
-      # Push to ECR
-      
       - name: Push image to Amazon ECR
         uses: docker/build-push-action@v5
         with:
@@ -86,16 +69,11 @@ jobs:
             ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
             ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-   
-      # Setup Kubectl
-    
       - name: Setup Kubectl
         uses: azure/setup-kubectl@v3
         with:
-         version: 'v1.29.0'
+          version: 'v1.29.0'
 
-
-          #Create the Entry
       - name: Create EKS Access Entry
         run: |
           aws eks create-access-entry \
@@ -103,7 +81,6 @@ jobs:
             --principal-arn ${{ secrets.AWS_ROLE_ARN_OIDC }} \
             --type STANDARD || echo "Access Entry already exists, skipping..."
             
-     #Attach the Policy
       - name: Attach EKS Access Policy
         run: |
           aws eks associate-access-policy \
@@ -112,36 +89,16 @@ jobs:
             --policy-arn arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy \
             --access-scope type=cluster
 
-      # Update kubeconfig (EKS)
-  
       - name: Update kubeconfig
         run: |
-         aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+          aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
 
-      - name: Verify Authentication
-        run: |
-          kubectl auth can-i create deployments --namespace focus
-
-       # Deploy to EKS
-       
-      # - name: Deploy to EKS
-      #   run: |
-      #     kubectl create namespace focus || true
-      #     kubectl apply -f ./focus-timer-app/focus-deployment.yaml -n focus
-      #     kubectl apply -f ./focus-timer-app/focus-service.yaml -n focus
-      #     kubectl get all -n focus
-
-
-      - name: Verify Connection
-        run: |
-          kubectl get nodes 
-
-     # ---------------------------
-      # Deploy to EKS
+      # ---------------------------
+      # Corrected Deploy Section
       # ---------------------------
       - name: Deploy to EKS
         run: |
-          # Explicitly export every variable used in your YAML manifests
+          # 1. Export variables for envsubst
           export APP_NAME=${{ env.APP_NAME }}
           export IMAGE_NAME=${{ env.IMAGE_NAME }}
           export REPLICAS=${{ env.REPLICAS }}
@@ -150,8 +107,13 @@ jobs:
           export SERVICE_TYPE=${{ env.SERVICE_TYPE }}
           export IMAGE_TAG=${{ github.run_number }}
 
+          # 2. Ensure Namespace exists
           kubectl get namespace ${APP_NAME} || kubectl create namespace ${APP_NAME}
 
-          # Check if the file exists before applying to avoid the "No such file" error
-          envsubst < ./focus-timer-app/k8s-manifests/deployment.yaml | kubectl apply -f - -n ${APP_NAME}
-          envsubst < ./focus-timer-app/k8s-manifests/service.yaml | kubectl apply -f - -n ${APP_NAME}
+          # 3. Apply Manifests (Using the ROOT k8s-manifests folder)
+          envsubst < ./k8s-manifests/deployment.yaml | kubectl apply -f - -n ${APP_NAME}
+          envsubst < ./k8s-manifests/service.yaml | kubectl apply -f - -n ${APP_NAME}
+
+          # 4. Final Status
+          kubectl get pods -n ${APP_NAME}
+          kubectl get svc -n ${APP_NAME}
