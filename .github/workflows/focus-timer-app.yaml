@@ -14,6 +14,7 @@ env:
   AWS_REGION: us-east-1
   IMAGE_NAME: focus-timer
   ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
+
  
 
 jobs:
@@ -119,9 +120,59 @@ jobs:
 
        # Deploy to EKS
        
+      # - name: Deploy to EKS
+      #   run: |
+      #     kubectl create namespace focus || true
+      #     kubectl apply -f ./focus-timer-app/focus-deployment.yaml -n focus
+      #     kubectl apply -f ./focus-timer-app/focus-service.yaml -n focus
+      #     kubectl get all -n focus
+
+
+      - name: Verify Connection
+        run: |
+          kubectl get nodes 
+
+      # ---------------------------
+      # Deploy to EKS
+      # ---------------------------
       - name: Deploy to EKS
         run: |
-          kubectl create namespace focus || true
-          kubectl apply -f ./focus-timer-app/focus-deployment.yaml -n focus
-          kubectl apply -f ./focus-timer-app/focus-service.yaml -n focus
-          kubectl get all -n focus
+    
+
+            export APP_NAME=${{ env.APP_NAME }}
+            export REPLICAS=${{ env.REPLICAS }}
+            export ECR_REGISTRY=${{ env.ECR_REGISTRY }}
+            export CONTAINER_PORT=${{ env.CONTAINER_PORT }}
+            export SERVICE_TYPE=${{ env.SERVICE_TYPE }}
+            export SERVICE_PORT=${{ env.SERVICE_PORT }}
+            export IMAGE_TAG=${{ github.run_number }}
+
+      
+
+            kubectl get namespace ${APP_NAME} || kubectl create namespace $APP_NAME
+
+    
+            envsubst < ./k8s-manifests/deployment.yaml | kubectl apply -f - -n $APP_NAME
+            envsubst < ./k8s-manifests/service.yaml | kubectl apply -f - -n $APP_NAME
+            
+     
+            echo "Waiting for Service to be provisioned..."
+            sleep 10
+
+            echo "If Load Balancer DNS...Remember to allow up to 2 minutes for your LoadBalancer to be provisioned and available..."
+            sleep 3
+
+            echo "--------------------------------------------------"
+            echo "Here is a list of pods in $APP_NAME namespace..."
+            echo "--------------------------------------------------"
+            kubectl get pods -n $APP_NAME
+            sleep 2
+
+            echo "-----------------------------------------------------"
+            echo "Here is a list of services in $APP_NAME namespace..."
+            echo "-----------------------------------------------------"
+            kubectl get svc -n $APP_NAME
+
+            ***Had to adjust as above since regular formating below was throwing an error with the manifest files
+            kubectl apply -f k8s-manifests/deployment.yaml -n ${{ env.APP_NAME }}
+            kubectl apply -f k8s-manifests/service.yaml -n ${{ env.APP_NAME }}        
