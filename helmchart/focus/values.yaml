@@ -1,0 +1,17 @@
+# Default values for focus.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+#Deploynment values
+
+app: focus
+replicas: 2
+ECR_REGISTRY: 732168977482.dkr.ecr.us-east-1.amazonaws.com
+IMAGE_TAG: focus-timer:18
+
+
+
+service:
+  type: ClusterIP
+  port: 80
+  target_port: 80
+  protocol: TCP
