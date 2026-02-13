@@ -1,14 +1,7 @@
-# Default values for focus.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-#Deploynment values
-
 app: focus
 replicas: 2
 ECR_REGISTRY: 732168977482.dkr.ecr.us-east-1.amazonaws.com
 IMAGE_TAG: 19
-
-
 
 service:
   type: LoadBalancer
@@ -16,6 +9,10 @@ service:
   target_port: 8080
   protocol: TCP
 
-  # Prevents the "nil pointer evaluation" error in NOTES.txt
+# Add these to satisfy the default NOTES.txt and other templates
+ingress:
+  enabled: false
 httpRoute:
+  enabled: false
+autoscaling:
   enabled: false
