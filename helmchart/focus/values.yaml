@@ -6,12 +6,12 @@
 app: focus
 replicas: 2
 ECR_REGISTRY: 732168977482.dkr.ecr.us-east-1.amazonaws.com
-IMAGE_TAG: focus-timer:18
+IMAGE_TAG: 19
 
 
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
   port: 80
   target_port: 8080
   protocol: TCP
