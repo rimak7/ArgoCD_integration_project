@@ -17,6 +17,7 @@ spec:
     spec:
       containers:
         - name: {{ .Values.app }}
-          image: "{{ .Values.ECR_REGISTRY }}/{{ .Values.app }}:{{ .Values.IMAGE_TAG }}"
+          # Note: Added quotes and ensured the ECR path matches your earlier setup
+          image: "{{ .Values.ECR_REGISTRY }}:{{ .Values.IMAGE_TAG }}"
           ports:
-            - containerPort: {{ .Values.CONTAINER_PORT }}
+            - containerPort: {{ .Values.service.target_port }} # <--- CHANGE THIS
