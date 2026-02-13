@@ -13,5 +13,5 @@ IMAGE_TAG: focus-timer:18
 service:
   type: ClusterIP
   port: 80
-  target_port: 80
+  target_port: 8080
   protocol: TCP
